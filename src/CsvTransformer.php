@@ -9,6 +9,7 @@ class CsvTransformer
     private $headers;
     private $columnsToInclude = [];
     private $newColumnNames = [];
+    private $profileDir = __DIR__ . '/../profiles/';
 
     public function __construct($inputFile, $outputFile)
     {
@@ -18,8 +19,59 @@ class CsvTransformer
 
     public function run()
     {
-        $this->selectColumns();
+        $this->loadOrCreateProfile();
         $this->transform();
+    }
+
+    private function loadOrCreateProfile()
+    {
+        $profiles = $this->getProfiles();
+        if (!empty($profiles)) {
+            echo "Select a profile or press enter to create a new one:\n";
+            foreach ($profiles as $index => $profile) {
+                echo "[$index] $profile\n";
+            }
+
+            $selection = trim(fgets(STDIN));
+            if (is_numeric($selection) && isset($profiles[$selection])) {
+                $this->loadProfile($profiles[$selection]);
+                return;
+            }
+        }
+
+        $this->selectColumns();
+        $this->saveProfile();
+    }
+
+    private function getProfiles()
+    {
+        return array_diff(scandir($this->profileDir), ['..', '.']);
+    }
+
+    private function loadProfile($profileName)
+    {
+        $profilePath = $this->profileDir . $profileName;
+        $profileData = json_decode(file_get_contents($profilePath), true);
+
+        $this->columnsToInclude = $profileData['columnsToInclude'];
+        $this->newColumnNames = $profileData['newColumnNames'];
+
+        echo "Loaded profile: $profileName\n";
+    }
+
+    private function saveProfile()
+    {
+        echo "Enter a name for this profile: ";
+        $profileName = trim(fgets(STDIN));
+        $profilePath = $this->profileDir . $profileName . '.json';
+
+        $profileData = [
+            'columnsToInclude' => $this->columnsToInclude,
+            'newColumnNames' => $this->newColumnNames,
+        ];
+
+        file_put_contents($profilePath, json_encode($profileData));
+        echo "Profile saved as: $profileName\n";
     }
 
     private function selectColumns()
