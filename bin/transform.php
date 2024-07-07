@@ -15,7 +15,7 @@ $outputFile = $argv[2];
 
 try {
     $transformer = new CsvTransformer($inputFile, $outputFile);
-    $transformer->run();
+    $transformer->transform();
 } catch (Exception $e) {
     echo 'Error: ' . $e->getMessage() . "\n";
 }
