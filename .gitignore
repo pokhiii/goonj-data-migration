@@ -1,2 +1,6 @@
 *.csv
 *.json
+
+vendor
+
+.DS_Store
