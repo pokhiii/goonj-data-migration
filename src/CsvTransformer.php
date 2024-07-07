@@ -7,6 +7,7 @@ use Pokhi\CsvTransformer\Transformers\VolActivitiesTransformer;
 use Pokhi\CsvTransformer\Transformers\VolSkillsTransformer;
 use Pokhi\CsvTransformer\Transformers\VolMotivationsTransformer;
 use Pokhi\CsvTransformer\Transformers\VolHourTransformer;
+use Pokhi\CsvTransformer\Transformers\CountryTransformer;
 
 class CsvTransformer
 {
@@ -34,6 +35,7 @@ class CsvTransformer
         }
 
         $this->headers = fgetcsv($inputHandle);
+
         if ($this->headers === false) {
             fclose($inputHandle);
             fclose($outputHandle);
@@ -63,6 +65,7 @@ class CsvTransformer
             'Volunteer Skills' => VolSkillsTransformer::class,
             'Motivates you to Volunteer' => VolMotivationsTransformer::class,
             'How many hours can you volunteer?' => VolHourTransformer::class,
+            'Mailing Country' => CountryTransformer::class,
         ];
 
         if (isset($columnTransformers[$header])) {
