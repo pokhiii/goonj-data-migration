@@ -2,18 +2,16 @@
 
 namespace Pokhi\CsvTransformer\Transformers;
 
-use Pokhi\CsvTransformer\ConfigManager;
+use Pokhi\CsvTransformer\Traits\Configurable;
 
 class VolActivitiesTransformer extends Transformer
 {
-    private $configManager;
-    private $activityMappings;
+    use Configurable;
 
     public function __construct($value)
     {
         parent::__construct($value);
-        $this->configManager = new ConfigManager('activity_mappings.json');
-        $this->activityMappings = $this->configManager->getMappings();
+        $this->initializeConfig('activity_mappings.json');
     }
 
     public function getValue()
@@ -28,17 +26,15 @@ class VolActivitiesTransformer extends Transformer
         foreach ($activities as $activity) {
             $activity = trim($activity); // Trim whitespace
 
-            if (isset($this->activityMappings[$activity])) {
-                $mappedActivities[] = $this->activityMappings[$activity];
+            if (isset($this->mappings[$activity])) {
+                $mappedActivities[] = $this->mappings[$activity];
             } else {
                 echo "Enter the CiviCRM value for '{$activity}': ";
                 $handle = fopen("php://stdin", "r");
                 $civiValue = trim(fgets($handle));
                 fclose($handle);
 
-                $this->activityMappings[$activity] = $civiValue;
-                $this->configManager->saveMappings($this->activityMappings);
-
+                $this->saveMapping($activity, $civiValue);
                 $mappedActivities[] = $civiValue;
             }
         }
