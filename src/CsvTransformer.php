@@ -2,6 +2,12 @@
 
 namespace Pokhi\CsvTransformer;
 
+use Pokhi\CsvTransformer\Transformers\StateTransformer;
+use Pokhi\CsvTransformer\Transformers\VolActivitiesTransformer;
+use Pokhi\CsvTransformer\Transformers\VolSkillsTransformer;
+use Pokhi\CsvTransformer\Transformers\VolMotivationsTransformer;
+use Pokhi\CsvTransformer\Transformers\VolHourTransformer;
+
 class CsvTransformer
 {
     private $inputFile;
@@ -51,8 +57,19 @@ class CsvTransformer
 
     private function transformValue($header, $value)
     {
-        echo "header: " . $header . PHP_EOL;
-        echo "value: " . $value . PHP_EOL;
+        $columnTransformers = [
+            'Mailing State/Province' => StateTransformer::class,
+            'Which activities are you interested in?' => VolActivitiesTransformer::class,
+            'Volunteer Skills' => VolSkillsTransformer::class,
+            'Motivates you to Volunteer' => VolMotivationsTransformer::class,
+            'How many hours can you volunteer?' => VolHourTransformer::class,
+        ];
+
+        if (isset($columnTransformers[$header])) {
+            $transformerClass = $columnTransformers[$header];
+            $transformer = new $transformerClass($value);
+            return $transformer->getValue();
+        }
 
         return $value;
     }
