@@ -1,0 +1,17 @@
+{
+    "name": "pokhi/csv-transformer",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Pokhi\\CsvTransformer\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "pokhiii",
+            "email": "pokhi@coloredcow.com"
+        }
+    ],
+    "require": {}
+}
